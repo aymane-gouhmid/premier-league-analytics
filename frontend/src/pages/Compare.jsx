@@ -16,14 +16,18 @@ export default function Compare() {
   const [teamA, setTeamA] = useState("Arsenal");
   const [teamB, setTeamB] = useState("Chelsea");
   const [comparison, setComparison] = useState(null);
+  const [h2h, setH2h] = useState(null);
 
   useEffect(() => {
     api.get("/teams").then((res) => setTeams(res.data));
   }, []);
 
   async function handleCompare() {
-    const res = await api.get(`/compare?team_a=${teamA}&team_b=${teamB}`);
-    setComparison(res.data);
+    const compareRes = await api.get(`/compare?team_a=${teamA}&team_b=${teamB}`);
+    const h2hRes = await api.get(`/head-to-head?team_a=${teamA}&team_b=${teamB}`);
+
+    setComparison(compareRes.data);
+    setH2h(h2hRes.data);
   }
 
   const chartData = comparison
@@ -56,11 +60,19 @@ export default function Compare() {
       ]
     : [];
 
+  const h2hChartData = h2h
+    ? [
+        { name: `${h2h.team_a} Wins`, value: h2h.team_a_wins },
+        { name: `${h2h.team_b} Wins`, value: h2h.team_b_wins },
+        { name: "Draws", value: h2h.draws },
+      ]
+    : [];
+
   return (
     <div>
       <h1 className="text-4xl font-bold">Compare Teams</h1>
       <p className="mt-2 text-slate-500">
-        Compare les performances historiques entre deux équipes.
+        Compare les performances historiques et les confrontations directes.
       </p>
 
       <div className="mt-6 grid grid-cols-3 gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -100,7 +112,7 @@ export default function Compare() {
           </section>
 
           <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-6 text-2xl font-bold">Visual Comparison</h2>
+            <h2 className="mb-6 text-2xl font-bold">Global Comparison</h2>
 
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -112,6 +124,34 @@ export default function Compare() {
                   <Legend />
                   <Bar dataKey={comparison.team_a.team} />
                   <Bar dataKey={comparison.team_b.team} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+        </>
+      )}
+
+      {h2h && (
+        <>
+          <section className="mt-8 grid grid-cols-5 gap-5">
+            <StatCard title="H2H Matches" value={h2h.matches_played} />
+            <StatCard title={`${h2h.team_a} Wins`} value={h2h.team_a_wins} />
+            <StatCard title={`${h2h.team_b} Wins`} value={h2h.team_b_wins} />
+            <StatCard title="Draws" value={h2h.draws} />
+            <StatCard title="Goals" value={`${h2h.goals_team_a} - ${h2h.goals_team_b}`} />
+          </section>
+
+          <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-6 text-2xl font-bold">Head-to-Head Results</h2>
+
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={h2hChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -143,6 +183,15 @@ function Stat({ label, value }) {
   return (
     <div className="rounded-xl bg-slate-50 p-4">
       <p className="text-sm text-slate-500">{label}</p>
+      <h3 className="mt-2 text-2xl font-bold">{value}</h3>
+    </div>
+  );
+}
+
+function StatCard({ title, value }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p className="text-sm text-slate-500">{title}</p>
       <h3 className="mt-2 text-2xl font-bold">{value}</h3>
     </div>
   );

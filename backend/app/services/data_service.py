@@ -292,3 +292,67 @@ def top_teams_by_wins():
     )
 
     return results[:10]
+
+def head_to_head(team_a: str, team_b: str):
+    df = load_matches()
+
+    matches = df[
+        (
+            (df["HomeTeam"] == team_a)
+            & (df["AwayTeam"] == team_b)
+        )
+        |
+        (
+            (df["HomeTeam"] == team_b)
+            & (df["AwayTeam"] == team_a)
+        )
+    ]
+
+    team_a_wins = 0
+    team_b_wins = 0
+    draws = 0
+
+    for _, row in matches.iterrows():
+
+        if row["FTR"] == "D":
+            draws += 1
+
+        elif (
+            row["HomeTeam"] == team_a
+            and row["FTR"] == "H"
+        ) or (
+            row["AwayTeam"] == team_a
+            and row["FTR"] == "A"
+        ):
+            team_a_wins += 1
+
+        else:
+            team_b_wins += 1
+
+    goals_team_a = 0
+    goals_team_b = 0
+
+    for _, row in matches.iterrows():
+
+        if row["HomeTeam"] == team_a:
+            goals_team_a += row["FTHG"]
+            goals_team_b += row["FTAG"]
+
+        else:
+            goals_team_a += row["FTAG"]
+            goals_team_b += row["FTHG"]
+
+    recent_matches = matches.tail(10).to_dict(orient="records")
+
+    return {
+        "team_a": team_a,
+        "team_b": team_b,
+        "matches_played": int(len(matches)),
+        "team_a_wins": int(team_a_wins),
+        "team_b_wins": int(team_b_wins),
+        "draws": int(draws),
+        "goals_team_a": int(goals_team_a),
+        "goals_team_b": int(goals_team_b),
+        "recent_matches": recent_matches,
+    }
+

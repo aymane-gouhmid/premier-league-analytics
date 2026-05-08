@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
 import api from "../api/footballApi";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 export default function Teams() {
   const [teams, setTeams] = useState([]);
@@ -11,8 +20,13 @@ export default function Teams() {
   }, []);
 
   async function handleSelectTeam(team) {
-    const res = await api.get(`/teams/${team}`);
-    setSelectedTeam(res.data);
+    const statsRes = await api.get(`/teams/${team}`);
+    const historyRes = await api.get(`/teams/${team}/history`);
+
+    setSelectedTeam({
+      ...statsRes.data,
+      history: historyRes.data,
+    });
   }
 
   const filteredTeams = teams.filter((team) =>
@@ -34,20 +48,38 @@ export default function Teams() {
       />
 
       {selectedTeam && (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold text-emerald-600">
-            {selectedTeam.team}
-          </h2>
+        <>
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-bold text-emerald-600">
+              {selectedTeam.team}
+            </h2>
 
-          <div className="mt-5 grid grid-cols-6 gap-4">
-            <Stat label="Played" value={selectedTeam.played} />
-            <Stat label="Wins" value={selectedTeam.wins} />
-            <Stat label="Draws" value={selectedTeam.draws} />
-            <Stat label="Losses" value={selectedTeam.losses} />
-            <Stat label="Goals For" value={selectedTeam.goals_scored} />
-            <Stat label="Goals Against" value={selectedTeam.goals_conceded} />
+            <div className="mt-5 grid grid-cols-6 gap-4">
+              <Stat label="Played" value={selectedTeam.played} />
+              <Stat label="Wins" value={selectedTeam.wins} />
+              <Stat label="Draws" value={selectedTeam.draws} />
+              <Stat label="Losses" value={selectedTeam.losses} />
+              <Stat label="Goals For" value={selectedTeam.goals_scored} />
+              <Stat label="Goals Against" value={selectedTeam.goals_conceded} />
+            </div>
           </div>
-        </div>
+
+          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="mb-6 text-2xl font-bold">Points Evolution</h2>
+
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={selectedTeam.history}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="season" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line dataKey="points" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
       )}
 
       <div className="mt-8 grid grid-cols-4 gap-4">
