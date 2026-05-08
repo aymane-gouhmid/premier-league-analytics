@@ -11,7 +11,8 @@ from app.services.data_service import (
     get_team_season_history,
     goals_by_season,
     top_teams_by_wins,
-    head_to_head
+    head_to_head,
+    get_team_last_matches
 )
 
 app = FastAPI(title="Premier League Analytics API")
@@ -72,4 +73,8 @@ def analytics_top_teams():
 @app.get("/head-to-head")
 def h2h(team_a: str, team_b: str):
     return head_to_head(team_a, team_b)
+
+@app.get("/teams/{team_name}/last-matches")
+def team_last_matches(team_name: str, limit: int = 10):
+    return get_team_last_matches(team_name, limit)
 

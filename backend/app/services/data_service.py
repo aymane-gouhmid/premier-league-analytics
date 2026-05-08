@@ -356,3 +356,40 @@ def head_to_head(team_a: str, team_b: str):
         "recent_matches": recent_matches,
     }
 
+def get_team_last_matches(team_name: str, limit: int = 10):
+    df = load_matches()
+
+    team_matches = df[
+        (df["HomeTeam"] == team_name) |
+        (df["AwayTeam"] == team_name)
+    ].copy()
+
+    team_matches = team_matches.tail(limit)
+
+    results = []
+
+    for _, row in team_matches.iterrows():
+        is_home = row["HomeTeam"] == team_name
+
+        goals_for = row["FTHG"] if is_home else row["FTAG"]
+        goals_against = row["FTAG"] if is_home else row["FTHG"]
+
+        if goals_for > goals_against:
+            result = "W"
+        elif goals_for < goals_against:
+            result = "L"
+        else:
+            result = "D"
+
+        results.append({
+            "season": row["Season"],
+            "date": row["Date"],
+            "home_team": row["HomeTeam"],
+            "away_team": row["AwayTeam"],
+            "home_goals": int(row["FTHG"]),
+            "away_goals": int(row["FTAG"]),
+            "result": result,
+            "venue": "Home" if is_home else "Away"
+        })
+
+    return results[::-1]
