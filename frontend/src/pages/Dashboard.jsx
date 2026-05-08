@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 import api from "../api/footballApi";
+import SkeletonCard from "../components/SkeletonCard";
 import {
   cardHover,
   cardVariants,
@@ -23,14 +24,21 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [goalsBySeason, setGoalsBySeason] = useState([]);
   const [topTeams, setTopTeams] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/summary").then((res) => setStats(res.data));
-    api.get("/analytics/goals-by-season").then((res) => setGoalsBySeason(res.data));
-    api.get("/analytics/top-teams").then((res) => setTopTeams(res.data));
+    Promise.all([
+      api.get("/summary"),
+      api.get("/analytics/goals-by-season"),
+      api.get("/analytics/top-teams"),
+    ])
+      .then(([summaryRes, goalsRes, topTeamsRes]) => {
+        setStats(summaryRes.data);
+        setGoalsBySeason(goalsRes.data);
+        setTopTeams(topTeamsRes.data);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
-
-  if (!stats) return <div className="text-xl font-bold sm:text-2xl">Loading...</div>;
 
   return (
     <motion.div
@@ -50,10 +58,18 @@ export default function Dashboard() {
         initial="hidden"
         animate="visible"
       >
-        <StatCard title="Saisons" value={stats.seasons} />
-        <StatCard title="Équipes" value={stats.teams} />
-        <StatCard title="Matchs" value={stats.matches} />
-        <StatCard title="Buts" value={stats.goals} />
+        {isLoading || !stats ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))
+        ) : (
+          <>
+            <StatCard title="Saisons" value={stats.seasons} />
+            <StatCard title="Equipes" value={stats.teams} />
+            <StatCard title="Matchs" value={stats.matches} />
+            <StatCard title="Buts" value={stats.goals} />
+          </>
+        )}
       </motion.section>
 
       <motion.section
@@ -62,25 +78,34 @@ export default function Dashboard() {
         initial="hidden"
         animate="visible"
       >
-        <ChartCard title="Goals by Season">
-          <LineChart data={goalsBySeason}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="season" />
-            <YAxis />
-            <Tooltip />
-            <Line dataKey="goals" />
-          </LineChart>
-        </ChartCard>
+        {isLoading ? (
+          <>
+            <SkeletonCard variant="chart" />
+            <SkeletonCard variant="chart" />
+          </>
+        ) : (
+          <>
+            <ChartCard title="Goals by Season">
+              <LineChart data={goalsBySeason}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="season" />
+                <YAxis />
+                <Tooltip />
+                <Line dataKey="goals" />
+              </LineChart>
+            </ChartCard>
 
-        <ChartCard title="Top 10 Teams by Wins">
-          <BarChart data={topTeams}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="team" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="wins" />
-          </BarChart>
-        </ChartCard>
+            <ChartCard title="Top 10 Teams by Wins">
+              <BarChart data={topTeams}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="team" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="wins" />
+              </BarChart>
+            </ChartCard>
+          </>
+        )}
       </motion.section>
     </motion.div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "../api/footballApi";
+import SkeletonCard from "../components/SkeletonCard";
 import {
   cardHover,
   cardVariants,
@@ -12,19 +13,28 @@ export default function Seasons() {
   const [seasons, setSeasons] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState("");
   const [seasonStats, setSeasonStats] = useState(null);
+  const [isSeasonsLoading, setIsSeasonsLoading] = useState(true);
+  const [isSeasonStatsLoading, setIsSeasonStatsLoading] = useState(false);
 
   useEffect(() => {
-    api.get("/seasons").then((res) => {
-      setSeasons(res.data);
-      setSelectedSeason(res.data[res.data.length - 1]);
-    });
+    api
+      .get("/seasons")
+      .then((res) => {
+        setSeasons(res.data);
+        setSelectedSeason(res.data[res.data.length - 1]);
+      })
+      .finally(() => setIsSeasonsLoading(false));
   }, []);
 
   useEffect(() => {
     if (selectedSeason) {
-      api.get(`/seasons/${selectedSeason}`).then((res) => {
-        setSeasonStats(res.data);
-      });
+      setIsSeasonStatsLoading(true);
+      api
+        .get(`/seasons/${selectedSeason}`)
+        .then((res) => {
+          setSeasonStats(res.data);
+        })
+        .finally(() => setIsSeasonStatsLoading(false));
     }
   }, [selectedSeason]);
 
@@ -44,13 +54,16 @@ export default function Seasons() {
         className="mt-6 min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-emerald-500 sm:w-auto"
         value={selectedSeason}
         onChange={(e) => setSelectedSeason(e.target.value)}
+        disabled={isSeasonsLoading}
       >
         {seasons.map((season) => (
           <option key={season}>{season}</option>
         ))}
       </select>
 
-      {seasonStats && (
+      {(isSeasonStatsLoading || !seasonStats) && <SeasonsSkeleton />}
+
+      {!isSeasonStatsLoading && seasonStats && (
         <>
           <motion.section
             className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5"
@@ -125,6 +138,27 @@ export default function Seasons() {
         </>
       )}
     </motion.div>
+  );
+}
+
+function SeasonsSkeleton() {
+  return (
+    <>
+      <motion.section
+        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {Array.from({ length: 4 }).map((_, index) => (
+          <SkeletonCard key={index} />
+        ))}
+      </motion.section>
+
+      <div className="-mx-4 mt-6 overflow-x-auto sm:mx-0 lg:mt-8">
+        <SkeletonCard variant="table" rows={10} />
+      </div>
+    </>
   );
 }
 

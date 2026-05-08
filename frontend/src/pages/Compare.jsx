@@ -18,6 +18,7 @@ import {
   containerVariants,
   pageVariants,
 } from "../lib/motion";
+import SkeletonCard from "../components/SkeletonCard";
 
 export default function Compare() {
   const [teams, setTeams] = useState([]);
@@ -26,19 +27,31 @@ export default function Compare() {
   const [comparison, setComparison] = useState(null);
   const [h2h, setH2h] = useState(null);
   const [prediction, setPrediction] = useState(null);
+  const [isComparing, setIsComparing] = useState(false);
 
   useEffect(() => {
     api.get("/teams").then((res) => setTeams(res.data));
   }, []);
 
   async function handleCompare() {
-    const compareRes = await api.get(`/compare?team_a=${teamA}&team_b=${teamB}`);
-    const h2hRes = await api.get(`/head-to-head?team_a=${teamA}&team_b=${teamB}`);
-    const predictionRes = await api.get(`/predict?team_a=${teamA}&team_b=${teamB}`);
+    setIsComparing(true);
+    setComparison(null);
+    setH2h(null);
+    setPrediction(null);
 
-    setComparison(compareRes.data);
-    setH2h(h2hRes.data);
-    setPrediction(predictionRes.data);
+    try {
+      const [compareRes, h2hRes, predictionRes] = await Promise.all([
+        api.get(`/compare?team_a=${teamA}&team_b=${teamB}`),
+        api.get(`/head-to-head?team_a=${teamA}&team_b=${teamB}`),
+        api.get(`/predict?team_a=${teamA}&team_b=${teamB}`),
+      ]);
+
+      setComparison(compareRes.data);
+      setH2h(h2hRes.data);
+      setPrediction(predictionRes.data);
+    } finally {
+      setIsComparing(false);
+    }
   }
 
   const chartData = comparison
@@ -120,12 +133,15 @@ export default function Compare() {
 
         <motion.button
           onClick={handleCompare}
-          className="min-h-12 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"
+          className="min-h-12 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-emerald-400"
+          disabled={isComparing}
           {...buttonMotion}
         >
-          Compare
+          {isComparing ? "Comparing..." : "Compare"}
         </motion.button>
       </motion.div>
+
+      {isComparing && <CompareSkeleton />}
 
       {comparison && (
         <>
@@ -254,6 +270,65 @@ export default function Compare() {
         </motion.section>
       )}
     </motion.div>
+  );
+}
+
+function CompareSkeleton() {
+  return (
+    <>
+      <motion.section
+        className="mt-6 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 lg:gap-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <TeamComparisonSkeleton />
+        <TeamComparisonSkeleton />
+      </motion.section>
+
+      <SkeletonCard variant="chart" className="mt-6 lg:mt-8" />
+
+      <motion.section
+        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-5 lg:gap-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {Array.from({ length: 5 }).map((_, index) => (
+          <SkeletonCard key={index} />
+        ))}
+      </motion.section>
+
+      <SkeletonCard variant="chart" className="mt-6 lg:mt-8" />
+
+      <motion.section
+        className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm sm:p-6 lg:mt-8"
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="h-6 w-52 animate-pulse rounded-full bg-emerald-100" />
+        <div className="mt-4 h-4 w-72 max-w-full animate-pulse rounded-full bg-slate-200" />
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      </motion.section>
+    </>
+  );
+}
+
+function TeamComparisonSkeleton() {
+  return (
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <div className="h-6 w-36 animate-pulse rounded-full bg-emerald-100" />
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 md:grid-cols-3 md:gap-4">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <SkeletonCard key={index} variant="tile" />
+        ))}
+      </div>
+    </div>
   );
 }
 
