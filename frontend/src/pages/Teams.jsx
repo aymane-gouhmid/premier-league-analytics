@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { teamLogos } from "../data/teamLogos";
 
 export default function Teams() {
   const [teams, setTeams] = useState([]);
@@ -84,13 +85,18 @@ export default function Teams() {
 
       <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-4">
         {filteredTeams.map((team) => (
-          <button
-            key={team}
-            onClick={() => handleSelectTeam(team)}
-            className="min-h-14 rounded-2xl border border-slate-200 bg-white p-4 text-left font-semibold shadow-sm hover:border-emerald-500 hover:text-emerald-600 sm:p-5"
-          >
-            {team}
-          </button>
+        <button
+          key={team}
+          onClick={() => handleSelectTeam(team)}
+          className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-left font-semibold shadow-sm hover:border-emerald-500 hover:text-emerald-600"
+        >
+          <img
+            src={teamLogos[team] || "https://resources.premierleague.com/premierleague/badges/t0.svg"}
+            alt={team}
+            className="h-8 w-8 object-contain"
+          />
+          <span>{team}</span>
+        </button>
         ))}
       </div>
     </div>
