@@ -17,6 +17,7 @@ export default function Compare() {
   const [teamB, setTeamB] = useState("Chelsea");
   const [comparison, setComparison] = useState(null);
   const [h2h, setH2h] = useState(null);
+  const [prediction, setPrediction] = useState(null);
 
   useEffect(() => {
     api.get("/teams").then((res) => setTeams(res.data));
@@ -25,9 +26,11 @@ export default function Compare() {
   async function handleCompare() {
     const compareRes = await api.get(`/compare?team_a=${teamA}&team_b=${teamB}`);
     const h2hRes = await api.get(`/head-to-head?team_a=${teamA}&team_b=${teamB}`);
+    const predictionRes = await api.get(`/predict?team_a=${teamA}&team_b=${teamB}`);
 
     setComparison(compareRes.data);
     setH2h(h2hRes.data);
+    setPrediction(predictionRes.data);
   }
 
   const chartData = comparison
@@ -72,7 +75,7 @@ export default function Compare() {
     <div className="min-w-0">
       <h1 className="text-3xl font-bold sm:text-4xl">Compare Teams</h1>
       <p className="mt-2 text-slate-500">
-        Compare les performances historiques et les confrontations directes.
+        Compare les performances historiques, les confrontations directes et la prédiction du match.
       </p>
 
       <div className="mt-6 grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 md:grid-cols-3 md:gap-4">
@@ -112,7 +115,9 @@ export default function Compare() {
           </section>
 
           <section className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8">
-            <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">Global Comparison</h2>
+            <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">
+              Global Comparison
+            </h2>
 
             <div className="h-64 min-w-0 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -138,11 +143,16 @@ export default function Compare() {
             <StatCard title={`${h2h.team_a} Wins`} value={h2h.team_a_wins} />
             <StatCard title={`${h2h.team_b} Wins`} value={h2h.team_b_wins} />
             <StatCard title="Draws" value={h2h.draws} />
-            <StatCard title="Goals" value={`${h2h.goals_team_a} - ${h2h.goals_team_b}`} />
+            <StatCard
+              title="Goals"
+              value={`${h2h.goals_team_a} - ${h2h.goals_team_b}`}
+            />
           </section>
 
           <section className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8">
-            <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">Head-to-Head Results</h2>
+            <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">
+              Head-to-Head Results
+            </h2>
 
             <div className="h-64 min-w-0 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -158,6 +168,38 @@ export default function Compare() {
           </section>
         </>
       )}
+
+      {prediction && (
+        <section className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm sm:p-6 lg:mt-8">
+          <h2 className="text-xl font-bold text-emerald-700 sm:text-2xl">
+            AI Match Prediction
+          </h2>
+
+          <p className="mt-2 text-slate-600">
+            Predicted winner:{" "}
+            <span className="font-bold text-emerald-700">
+              {prediction.predicted_winner}
+            </span>
+          </p>
+
+          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <StatCard
+              title={`${prediction.team_a} Probability`}
+              value={`${prediction.probability_team_a}%`}
+            />
+            <StatCard
+              title="Draw Probability"
+              value={`${prediction.probability_draw}%`}
+            />
+            <StatCard
+              title={`${prediction.team_b} Probability`}
+              value={`${prediction.probability_team_b}%`}
+            />
+          </div>
+
+          <p className="mt-4 text-sm text-slate-500">{prediction.note}</p>
+        </section>
+      )}
     </div>
   );
 }
@@ -165,7 +207,9 @@ export default function Compare() {
 function TeamCard({ data }) {
   return (
     <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
-      <h2 className="break-words text-xl font-bold text-emerald-600 sm:text-2xl">{data.team}</h2>
+      <h2 className="break-words text-xl font-bold text-emerald-600 sm:text-2xl">
+        {data.team}
+      </h2>
 
       <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 md:grid-cols-3 md:gap-4">
         <Stat label="Played" value={data.played} />
@@ -183,7 +227,9 @@ function Stat({ label, value }) {
   return (
     <div className="min-w-0 rounded-xl bg-slate-50 p-3 sm:p-4">
       <p className="text-sm text-slate-500">{label}</p>
-      <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">{value}</h3>
+      <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">
+        {value}
+      </h3>
     </div>
   );
 }
@@ -192,7 +238,9 @@ function StatCard({ title, value }) {
   return (
     <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
       <p className="text-sm text-slate-500">{title}</p>
-      <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">{value}</h3>
+      <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">
+        {value}
+      </h3>
     </div>
   );
 }

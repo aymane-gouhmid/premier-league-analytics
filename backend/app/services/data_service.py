@@ -393,3 +393,56 @@ def get_team_last_matches(team_name: str, limit: int = 10):
         })
 
     return results[::-1]
+
+def predict_match(team_a: str, team_b: str):
+    stats_a = get_team_stats(team_a)
+    stats_b = get_team_stats(team_b)
+
+    history_a = get_team_season_history(team_a)
+    history_b = get_team_season_history(team_b)
+
+    recent_a = history_a[-5:] if len(history_a) >= 5 else history_a
+    recent_b = history_b[-5:] if len(history_b) >= 5 else history_b
+
+    points_a = sum(item["points"] for item in recent_a)
+    points_b = sum(item["points"] for item in recent_b)
+
+    win_rate_a = stats_a["wins"] / stats_a["played"] if stats_a["played"] else 0
+    win_rate_b = stats_b["wins"] / stats_b["played"] if stats_b["played"] else 0
+
+    goals_rate_a = stats_a["goals_scored"] / stats_a["played"] if stats_a["played"] else 0
+    goals_rate_b = stats_b["goals_scored"] / stats_b["played"] if stats_b["played"] else 0
+
+    score_a = (points_a * 0.4) + (win_rate_a * 100 * 0.35) + (goals_rate_a * 20 * 0.25)
+    score_b = (points_b * 0.4) + (win_rate_b * 100 * 0.35) + (goals_rate_b * 20 * 0.25)
+
+    total = score_a + score_b
+
+    if total == 0:
+        prob_a = 33
+        prob_b = 33
+        draw = 34
+    else:
+        prob_a = round((score_a / total) * 80, 1)
+        prob_b = round((score_b / total) * 80, 1)
+        draw = round(100 - prob_a - prob_b, 1)
+
+    if prob_a > prob_b:
+        predicted_winner = team_a
+    elif prob_b > prob_a:
+        predicted_winner = team_b
+    else:
+        predicted_winner = "Draw"
+
+    return {
+        "team_a": team_a,
+        "team_b": team_b,
+        "predicted_winner": predicted_winner,
+        "probability_team_a": prob_a,
+        "probability_team_b": prob_b,
+        "probability_draw": draw,
+        "score_team_a": round(score_a, 2),
+        "score_team_b": round(score_b, 2),
+        "note": "This prediction is based on historical stats, recent season performance, win rate and goals rate."
+    }
+

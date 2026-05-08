@@ -12,7 +12,8 @@ from app.services.data_service import (
     goals_by_season,
     top_teams_by_wins,
     head_to_head,
-    get_team_last_matches
+    get_team_last_matches,
+    predict_match
 )
 
 app = FastAPI(title="Premier League Analytics API")
@@ -77,4 +78,8 @@ def h2h(team_a: str, team_b: str):
 @app.get("/teams/{team_name}/last-matches")
 def team_last_matches(team_name: str, limit: int = 10):
     return get_team_last_matches(team_name, limit)
+
+@app.get("/predict")
+def predict(team_a: str, team_b: str):
+    return predict_match(team_a, team_b)
 
