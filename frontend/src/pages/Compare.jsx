@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
   BarChart,
   Bar,
@@ -10,6 +11,13 @@ import {
   Legend,
 } from "recharts";
 import api from "../api/footballApi";
+import {
+  buttonMotion,
+  cardHover,
+  cardVariants,
+  containerVariants,
+  pageVariants,
+} from "../lib/motion";
 
 export default function Compare() {
   const [teams, setTeams] = useState([]);
@@ -72,13 +80,24 @@ export default function Compare() {
     : [];
 
   return (
-    <div className="min-w-0">
+    <motion.div
+      className="min-w-0"
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <h1 className="text-3xl font-bold sm:text-4xl">Compare Teams</h1>
       <p className="mt-2 text-slate-500">
         Compare les performances historiques, les confrontations directes et la prédiction du match.
       </p>
 
-      <div className="mt-6 grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 md:grid-cols-3 md:gap-4">
+      <motion.div
+        className="mt-6 grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 md:grid-cols-3 md:gap-4"
+        variants={cardVariants}
+        initial="hidden"
+        animate="visible"
+        whileHover={cardHover}
+      >
         <select
           className="min-h-12 min-w-0 rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500"
           value={teamA}
@@ -99,22 +118,34 @@ export default function Compare() {
           ))}
         </select>
 
-        <button
+        <motion.button
           onClick={handleCompare}
           className="min-h-12 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"
+          {...buttonMotion}
         >
           Compare
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {comparison && (
         <>
-          <section className="mt-6 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 lg:gap-5">
+          <motion.section
+            className="mt-6 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 lg:gap-5"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <TeamCard data={comparison.team_a} />
             <TeamCard data={comparison.team_b} />
-          </section>
+          </motion.section>
 
-          <section className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8">
+          <motion.section
+            className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover={cardHover}
+          >
             <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">
               Global Comparison
             </h2>
@@ -132,13 +163,18 @@ export default function Compare() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </section>
+          </motion.section>
         </>
       )}
 
       {h2h && (
         <>
-          <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-5 lg:gap-5">
+          <motion.section
+            className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-5 lg:gap-5"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <StatCard title="H2H Matches" value={h2h.matches_played} />
             <StatCard title={`${h2h.team_a} Wins`} value={h2h.team_a_wins} />
             <StatCard title={`${h2h.team_b} Wins`} value={h2h.team_b_wins} />
@@ -147,9 +183,15 @@ export default function Compare() {
               title="Goals"
               value={`${h2h.goals_team_a} - ${h2h.goals_team_b}`}
             />
-          </section>
+          </motion.section>
 
-          <section className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8">
+          <motion.section
+            className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover={cardHover}
+          >
             <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">
               Head-to-Head Results
             </h2>
@@ -165,12 +207,18 @@ export default function Compare() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          </section>
+          </motion.section>
         </>
       )}
 
       {prediction && (
-        <section className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm sm:p-6 lg:mt-8">
+        <motion.section
+          className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm sm:p-6 lg:mt-8"
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          whileHover={{ ...cardHover, y: -3 }}
+        >
           <h2 className="text-xl font-bold text-emerald-700 sm:text-2xl">
             AI Match Prediction
           </h2>
@@ -182,7 +230,12 @@ export default function Compare() {
             </span>
           </p>
 
-          <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <motion.div
+            className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <StatCard
               title={`${prediction.team_a} Probability`}
               value={`${prediction.probability_team_a}%`}
@@ -195,18 +248,22 @@ export default function Compare() {
               title={`${prediction.team_b} Probability`}
               value={`${prediction.probability_team_b}%`}
             />
-          </div>
+          </motion.div>
 
           <p className="mt-4 text-sm text-slate-500">{prediction.note}</p>
-        </section>
+        </motion.section>
       )}
-    </div>
+    </motion.div>
   );
 }
 
 function TeamCard({ data }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <motion.div
+      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+      variants={cardVariants}
+      whileHover={cardHover}
+    >
       <h2 className="break-words text-xl font-bold text-emerald-600 sm:text-2xl">
         {data.team}
       </h2>
@@ -219,28 +276,36 @@ function TeamCard({ data }) {
         <Stat label="Goals For" value={data.goals_scored} />
         <Stat label="Goals Against" value={data.goals_conceded} />
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function Stat({ label, value }) {
   return (
-    <div className="min-w-0 rounded-xl bg-slate-50 p-3 sm:p-4">
+    <motion.div
+      className="min-w-0 rounded-xl bg-slate-50 p-3 sm:p-4"
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+    >
       <p className="text-sm text-slate-500">{label}</p>
       <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">
         {value}
       </h3>
-    </div>
+    </motion.div>
   );
 }
 
 function StatCard({ title, value }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <motion.div
+      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+      variants={cardVariants}
+      whileHover={cardHover}
+    >
       <p className="text-sm text-slate-500">{title}</p>
       <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">
         {value}
       </h3>
-    </div>
+    </motion.div>
   );
 }

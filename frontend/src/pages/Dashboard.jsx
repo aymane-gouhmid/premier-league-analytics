@@ -10,7 +10,14 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { motion } from "framer-motion";
 import api from "../api/footballApi";
+import {
+  cardHover,
+  cardVariants,
+  containerVariants,
+  pageVariants,
+} from "../lib/motion";
 
 export default function Dashboard() {
   const [stats, setStats] = useState(null);
@@ -26,20 +33,35 @@ export default function Dashboard() {
   if (!stats) return <div className="text-xl font-bold sm:text-2xl">Loading...</div>;
 
   return (
-    <div className="min-w-0">
+    <motion.div
+      className="min-w-0"
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <h1 className="text-3xl font-bold sm:text-4xl">Premier League Dashboard</h1>
       <p className="mt-2 text-slate-500">
         Real EPL statistics from 2000 to 2026.
       </p>
 
-      <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5">
+      <motion.section
+        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <StatCard title="Saisons" value={stats.seasons} />
         <StatCard title="Équipes" value={stats.teams} />
         <StatCard title="Matchs" value={stats.matches} />
         <StatCard title="Buts" value={stats.goals} />
-      </section>
+      </motion.section>
 
-      <section className="mt-6 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 lg:gap-5">
+      <motion.section
+        className="mt-6 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 lg:gap-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <ChartCard title="Goals by Season">
           <LineChart data={goalsBySeason}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -59,29 +81,37 @@ export default function Dashboard() {
             <Bar dataKey="wins" />
           </BarChart>
         </ChartCard>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }
 
 function StatCard({ title, value }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <motion.div
+      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+      variants={cardVariants}
+      whileHover={cardHover}
+    >
       <p className="text-sm text-slate-500">{title}</p>
       <h3 className="mt-2 break-words text-2xl font-bold sm:mt-3 sm:text-3xl">{value}</h3>
-    </div>
+    </motion.div>
   );
 }
 
 function ChartCard({ title, children }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <motion.div
+      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+      variants={cardVariants}
+      whileHover={cardHover}
+    >
       <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">{title}</h2>
       <div className="h-64 min-w-0 sm:h-80">
         <ResponsiveContainer width="100%" height="100%">
           {children}
         </ResponsiveContainer>
       </div>
-    </div>
+    </motion.div>
   );
 }

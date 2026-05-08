@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import api from "../api/footballApi";
+import {
+  cardHover,
+  cardVariants,
+  containerVariants,
+  pageVariants,
+} from "../lib/motion";
 
 export default function Seasons() {
   const [seasons, setSeasons] = useState([]);
@@ -22,7 +29,12 @@ export default function Seasons() {
   }, [selectedSeason]);
 
   return (
-    <div className="min-w-0">
+    <motion.div
+      className="min-w-0"
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <h1 className="text-3xl font-bold sm:text-4xl">Seasons</h1>
       <p className="mt-2 text-slate-500">
         Explore les statistiques de chaque saison Premier League.
@@ -40,14 +52,25 @@ export default function Seasons() {
 
       {seasonStats && (
         <>
-          <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5">
+          <motion.section
+            className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <StatCard title="Saison" value={seasonStats.season} />
             <StatCard title="Champion" value={seasonStats.champion} />
             <StatCard title="Matchs" value={seasonStats.matches} />
             <StatCard title="Buts" value={seasonStats.goals} />
-          </section>
+          </motion.section>
 
-          <section className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8">
+          <motion.section
+            className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover={cardHover}
+          >
             <h2 className="mb-4 text-xl font-bold sm:mb-5 sm:text-2xl">Classement</h2>
 
             <div className="-mx-4 overflow-x-auto sm:mx-0">
@@ -69,9 +92,17 @@ export default function Seasons() {
 
                 <tbody>
                   {seasonStats.standings.map((team, index) => (
-                    <tr
+                    <motion.tr
                       key={team.team}
                       className="border-b border-slate-100 hover:bg-slate-50"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.22,
+                        delay: Math.min(index * 0.015, 0.25),
+                        ease: "easeOut",
+                      }}
+                      whileHover={{ backgroundColor: "#f8fafc" }}
                     >
                       <td className="px-4 py-3 font-semibold sm:px-0">{index + 1}</td>
                       <td className="px-3 font-semibold sm:px-0">{team.team}</td>
@@ -85,23 +116,27 @@ export default function Seasons() {
                       <td className="px-3 font-bold text-emerald-600 sm:px-0">
                         {team.points}
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </section>
+          </motion.section>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }
 
 function StatCard({ title, value }) {
   return (
-    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+    <motion.div
+      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+      variants={cardVariants}
+      whileHover={cardHover}
+    >
       <p className="text-sm text-slate-500">{title}</p>
       <h3 className="mt-2 break-words text-xl font-bold sm:mt-3 sm:text-2xl">{value}</h3>
-    </div>
+    </motion.div>
   );
 }

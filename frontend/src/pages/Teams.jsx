@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import api from "../api/footballApi";
 import {
   LineChart,
@@ -10,6 +11,13 @@ import {
   CartesianGrid,
 } from "recharts";
 import { teamLogos } from "../data/teamLogos";
+import {
+  buttonMotion,
+  cardHover,
+  cardVariants,
+  containerVariants,
+  pageVariants,
+} from "../lib/motion";
 
 export default function Teams() {
   const [teams, setTeams] = useState([]);
@@ -37,7 +45,12 @@ export default function Teams() {
   );
 
   return (
-    <div className="min-w-0">
+    <motion.div
+      className="min-w-0"
+      variants={pageVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <h1 className="text-3xl font-bold sm:text-4xl">Teams</h1>
       <p className="mt-2 text-slate-500">
         Explore les statistiques de chaque équipe.
@@ -52,7 +65,13 @@ export default function Teams() {
 
       {selectedTeam && (
         <>
-          <div className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+          <motion.div
+            className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover={cardHover}
+          >
             <div className="flex items-center gap-3">
               <img
                 src={teamLogos[selectedTeam.team]}
@@ -72,9 +91,15 @@ export default function Teams() {
               <Stat label="Goals For" value={selectedTeam.goals_scored} />
               <Stat label="Goals Against" value={selectedTeam.goals_conceded} />
             </div>
-          </div>
+          </motion.div>
 
-          <div className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+          <motion.div
+            className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover={cardHover}
+          >
             <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">
               Points Evolution
             </h2>
@@ -90,18 +115,26 @@ export default function Teams() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+          <motion.div
+            className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover={cardHover}
+          >
             <h2 className="mb-4 text-xl font-bold sm:text-2xl">
               Last 10 Matches
             </h2>
 
             <div className="space-y-3">
               {selectedTeam.lastMatches.map((match, index) => (
-                <div
+                <motion.div
                   key={index}
                   className="flex flex-col gap-3 rounded-xl bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  whileHover={{ y: -2, backgroundColor: "#f8fafc" }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
                 >
                   <div>
                     <p className="text-sm text-slate-500">
@@ -124,19 +157,33 @@ export default function Teams() {
                   >
                     {match.result}
                   </span>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </>
       )}
 
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-4">
+      <motion.div
+        className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-4"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {filteredTeams.map((team) => (
-          <button
+          <motion.button
             key={team}
             onClick={() => handleSelectTeam(team)}
             className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-left font-semibold shadow-sm hover:border-emerald-500 hover:text-emerald-600"
+            variants={cardVariants}
+            whileHover={{
+              y: -4,
+              scale: 1.01,
+              borderColor: "#10b981",
+              boxShadow: "0 18px 38px -24px rgba(15, 23, 42, 0.45)",
+            }}
+            whileTap={buttonMotion.whileTap}
+            transition={buttonMotion.transition}
           >
             <img
               src={teamLogos[team]}
@@ -144,20 +191,24 @@ export default function Teams() {
               className="h-8 w-8 object-contain"
             />
             <span>{team}</span>
-          </button>
+          </motion.button>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
 function Stat({ label, value }) {
   return (
-    <div className="min-w-0 rounded-xl bg-slate-50 p-3 sm:p-4">
+    <motion.div
+      className="min-w-0 rounded-xl bg-slate-50 p-3 sm:p-4"
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+    >
       <p className="text-sm text-slate-500">{label}</p>
       <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">
         {value}
       </h3>
-    </div>
+    </motion.div>
   );
 }
