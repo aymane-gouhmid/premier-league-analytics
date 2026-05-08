@@ -34,14 +34,14 @@ export default function Teams() {
   );
 
   return (
-    <div>
-      <h1 className="text-4xl font-bold">Teams</h1>
+    <div className="min-w-0">
+      <h1 className="text-3xl font-bold sm:text-4xl">Teams</h1>
       <p className="mt-2 text-slate-500">
         Explore les statistiques de chaque équipe.
       </p>
 
       <input
-        className="mt-6 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-emerald-500"
+        className="mt-6 min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-emerald-500"
         placeholder="Search team..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
@@ -49,12 +49,12 @@ export default function Teams() {
 
       {selectedTeam && (
         <>
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-2xl font-bold text-emerald-600">
+          <div className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <h2 className="break-words text-xl font-bold text-emerald-600 sm:text-2xl">
               {selectedTeam.team}
             </h2>
 
-            <div className="mt-5 grid grid-cols-6 gap-4">
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:grid-cols-2 lg:grid-cols-6 lg:gap-4">
               <Stat label="Played" value={selectedTeam.played} />
               <Stat label="Wins" value={selectedTeam.wins} />
               <Stat label="Draws" value={selectedTeam.draws} />
@@ -64,10 +64,10 @@ export default function Teams() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-6 text-2xl font-bold">Points Evolution</h2>
+          <div className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">Points Evolution</h2>
 
-            <div className="h-80">
+            <div className="h-64 min-w-0 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={selectedTeam.history}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -82,12 +82,12 @@ export default function Teams() {
         </>
       )}
 
-      <div className="mt-8 grid grid-cols-4 gap-4">
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-4">
         {filteredTeams.map((team) => (
           <button
             key={team}
             onClick={() => handleSelectTeam(team)}
-            className="rounded-2xl border border-slate-200 bg-white p-5 text-left font-semibold shadow-sm hover:border-emerald-500 hover:text-emerald-600"
+            className="min-h-14 rounded-2xl border border-slate-200 bg-white p-4 text-left font-semibold shadow-sm hover:border-emerald-500 hover:text-emerald-600 sm:p-5"
           >
             {team}
           </button>
@@ -99,9 +99,9 @@ export default function Teams() {
 
 function Stat({ label, value }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-4">
+    <div className="min-w-0 rounded-xl bg-slate-50 p-3 sm:p-4">
       <p className="text-sm text-slate-500">{label}</p>
-      <h3 className="mt-2 text-2xl font-bold">{value}</h3>
+      <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">{value}</h3>
     </div>
   );
 }

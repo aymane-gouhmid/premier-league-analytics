@@ -69,15 +69,15 @@ export default function Compare() {
     : [];
 
   return (
-    <div>
-      <h1 className="text-4xl font-bold">Compare Teams</h1>
+    <div className="min-w-0">
+      <h1 className="text-3xl font-bold sm:text-4xl">Compare Teams</h1>
       <p className="mt-2 text-slate-500">
         Compare les performances historiques et les confrontations directes.
       </p>
 
-      <div className="mt-6 grid grid-cols-3 gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mt-6 grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 md:grid-cols-3 md:gap-4">
         <select
-          className="rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500"
+          className="min-h-12 min-w-0 rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500"
           value={teamA}
           onChange={(e) => setTeamA(e.target.value)}
         >
@@ -87,7 +87,7 @@ export default function Compare() {
         </select>
 
         <select
-          className="rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500"
+          className="min-h-12 min-w-0 rounded-xl border border-slate-200 px-4 py-3 outline-none focus:border-emerald-500"
           value={teamB}
           onChange={(e) => setTeamB(e.target.value)}
         >
@@ -98,7 +98,7 @@ export default function Compare() {
 
         <button
           onClick={handleCompare}
-          className="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"
+          className="min-h-12 rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700"
         >
           Compare
         </button>
@@ -106,15 +106,15 @@ export default function Compare() {
 
       {comparison && (
         <>
-          <section className="mt-8 grid grid-cols-2 gap-5">
+          <section className="mt-6 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 lg:gap-5">
             <TeamCard data={comparison.team_a} />
             <TeamCard data={comparison.team_b} />
           </section>
 
-          <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-6 text-2xl font-bold">Global Comparison</h2>
+          <section className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8">
+            <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">Global Comparison</h2>
 
-            <div className="h-80">
+            <div className="h-64 min-w-0 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -133,7 +133,7 @@ export default function Compare() {
 
       {h2h && (
         <>
-          <section className="mt-8 grid grid-cols-5 gap-5">
+          <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-5 lg:gap-5">
             <StatCard title="H2H Matches" value={h2h.matches_played} />
             <StatCard title={`${h2h.team_a} Wins`} value={h2h.team_a_wins} />
             <StatCard title={`${h2h.team_b} Wins`} value={h2h.team_b_wins} />
@@ -141,10 +141,10 @@ export default function Compare() {
             <StatCard title="Goals" value={`${h2h.goals_team_a} - ${h2h.goals_team_b}`} />
           </section>
 
-          <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-6 text-2xl font-bold">Head-to-Head Results</h2>
+          <section className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8">
+            <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">Head-to-Head Results</h2>
 
-            <div className="h-80">
+            <div className="h-64 min-w-0 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={h2hChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -164,10 +164,10 @@ export default function Compare() {
 
 function TeamCard({ data }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-2xl font-bold text-emerald-600">{data.team}</h2>
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <h2 className="break-words text-xl font-bold text-emerald-600 sm:text-2xl">{data.team}</h2>
 
-      <div className="mt-5 grid grid-cols-3 gap-4">
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-5 md:grid-cols-3 md:gap-4">
         <Stat label="Played" value={data.played} />
         <Stat label="Wins" value={data.wins} />
         <Stat label="Draws" value={data.draws} />
@@ -181,18 +181,18 @@ function TeamCard({ data }) {
 
 function Stat({ label, value }) {
   return (
-    <div className="rounded-xl bg-slate-50 p-4">
+    <div className="min-w-0 rounded-xl bg-slate-50 p-3 sm:p-4">
       <p className="text-sm text-slate-500">{label}</p>
-      <h3 className="mt-2 text-2xl font-bold">{value}</h3>
+      <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">{value}</h3>
     </div>
   );
 }
 
 function StatCard({ title, value }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
       <p className="text-sm text-slate-500">{title}</p>
-      <h3 className="mt-2 text-2xl font-bold">{value}</h3>
+      <h3 className="mt-2 break-words text-xl font-bold sm:text-2xl">{value}</h3>
     </div>
   );
 }

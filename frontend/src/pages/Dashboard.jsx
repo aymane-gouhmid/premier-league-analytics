@@ -23,23 +23,23 @@ export default function Dashboard() {
     api.get("/analytics/top-teams").then((res) => setTopTeams(res.data));
   }, []);
 
-  if (!stats) return <div className="text-2xl font-bold">Loading...</div>;
+  if (!stats) return <div className="text-xl font-bold sm:text-2xl">Loading...</div>;
 
   return (
-    <div>
-      <h1 className="text-4xl font-bold">Premier League Dashboard</h1>
+    <div className="min-w-0">
+      <h1 className="text-3xl font-bold sm:text-4xl">Premier League Dashboard</h1>
       <p className="mt-2 text-slate-500">
         Real EPL statistics from 2000 to 2026.
       </p>
 
-      <section className="mt-8 grid grid-cols-4 gap-5">
+      <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5">
         <StatCard title="Saisons" value={stats.seasons} />
         <StatCard title="Équipes" value={stats.teams} />
         <StatCard title="Matchs" value={stats.matches} />
         <StatCard title="Buts" value={stats.goals} />
       </section>
 
-      <section className="mt-8 grid grid-cols-2 gap-5">
+      <section className="mt-6 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 lg:gap-5">
         <ChartCard title="Goals by Season">
           <LineChart data={goalsBySeason}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -66,18 +66,18 @@ export default function Dashboard() {
 
 function StatCard({ title, value }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <p className="text-sm text-slate-500">{title}</p>
-      <h3 className="mt-3 text-3xl font-bold">{value}</h3>
+      <h3 className="mt-2 break-words text-2xl font-bold sm:mt-3 sm:text-3xl">{value}</h3>
     </div>
   );
 }
 
 function ChartCard({ title, children }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="mb-6 text-2xl font-bold">{title}</h2>
-      <div className="h-80">
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+      <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">{title}</h2>
+      <div className="h-64 min-w-0 sm:h-80">
         <ResponsiveContainer width="100%" height="100%">
           {children}
         </ResponsiveContainer>

@@ -22,14 +22,14 @@ export default function Seasons() {
   }, [selectedSeason]);
 
   return (
-    <div>
-      <h1 className="text-4xl font-bold">Seasons</h1>
+    <div className="min-w-0">
+      <h1 className="text-3xl font-bold sm:text-4xl">Seasons</h1>
       <p className="mt-2 text-slate-500">
         Explore les statistiques de chaque saison Premier League.
       </p>
 
       <select
-        className="mt-6 rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-emerald-500"
+        className="mt-6 min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 outline-none focus:border-emerald-500 sm:w-auto"
         value={selectedSeason}
         onChange={(e) => setSelectedSeason(e.target.value)}
       >
@@ -40,30 +40,30 @@ export default function Seasons() {
 
       {seasonStats && (
         <>
-          <section className="mt-8 grid grid-cols-4 gap-5">
+          <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5">
             <StatCard title="Saison" value={seasonStats.season} />
             <StatCard title="Champion" value={seasonStats.champion} />
             <StatCard title="Matchs" value={seasonStats.matches} />
             <StatCard title="Buts" value={seasonStats.goals} />
           </section>
 
-          <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="mb-5 text-2xl font-bold">Classement</h2>
+          <section className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:mt-8">
+            <h2 className="mb-4 text-xl font-bold sm:mb-5 sm:text-2xl">Classement</h2>
 
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left">
+            <div className="-mx-4 overflow-x-auto sm:mx-0">
+              <table className="min-w-[760px] border-collapse text-left text-sm sm:w-full">
                 <thead>
                   <tr className="border-b border-slate-200 text-sm text-slate-500">
-                    <th className="py-3">#</th>
-                    <th>Team</th>
-                    <th>Played</th>
-                    <th>W</th>
-                    <th>D</th>
-                    <th>L</th>
-                    <th>GF</th>
-                    <th>GA</th>
-                    <th>GD</th>
-                    <th>Pts</th>
+                    <th className="px-4 py-3 sm:px-0">#</th>
+                    <th className="px-3 sm:px-0">Team</th>
+                    <th className="px-3 sm:px-0">Played</th>
+                    <th className="px-3 sm:px-0">W</th>
+                    <th className="px-3 sm:px-0">D</th>
+                    <th className="px-3 sm:px-0">L</th>
+                    <th className="px-3 sm:px-0">GF</th>
+                    <th className="px-3 sm:px-0">GA</th>
+                    <th className="px-3 sm:px-0">GD</th>
+                    <th className="px-3 sm:px-0">Pts</th>
                   </tr>
                 </thead>
 
@@ -73,16 +73,16 @@ export default function Seasons() {
                       key={team.team}
                       className="border-b border-slate-100 hover:bg-slate-50"
                     >
-                      <td className="py-3 font-semibold">{index + 1}</td>
-                      <td className="font-semibold">{team.team}</td>
-                      <td>{team.played}</td>
-                      <td>{team.wins}</td>
-                      <td>{team.draws}</td>
-                      <td>{team.losses}</td>
-                      <td>{team.goals_for}</td>
-                      <td>{team.goals_against}</td>
-                      <td>{team.goal_diff}</td>
-                      <td className="font-bold text-emerald-600">
+                      <td className="px-4 py-3 font-semibold sm:px-0">{index + 1}</td>
+                      <td className="px-3 font-semibold sm:px-0">{team.team}</td>
+                      <td className="px-3 sm:px-0">{team.played}</td>
+                      <td className="px-3 sm:px-0">{team.wins}</td>
+                      <td className="px-3 sm:px-0">{team.draws}</td>
+                      <td className="px-3 sm:px-0">{team.losses}</td>
+                      <td className="px-3 sm:px-0">{team.goals_for}</td>
+                      <td className="px-3 sm:px-0">{team.goals_against}</td>
+                      <td className="px-3 sm:px-0">{team.goal_diff}</td>
+                      <td className="px-3 font-bold text-emerald-600 sm:px-0">
                         {team.points}
                       </td>
                     </tr>
@@ -99,9 +99,9 @@ export default function Seasons() {
 
 function StatCard({ title, value }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
       <p className="text-sm text-slate-500">{title}</p>
-      <h3 className="mt-3 text-2xl font-bold">{value}</h3>
+      <h3 className="mt-2 break-words text-xl font-bold sm:mt-3 sm:text-2xl">{value}</h3>
     </div>
   );
 }
