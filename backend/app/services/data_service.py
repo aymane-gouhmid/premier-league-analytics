@@ -233,3 +233,62 @@ def get_team_season_history(team_name: str):
         })
 
     return history
+
+def goals_by_season():
+    df = load_matches()
+
+    result = []
+
+    for season in sorted(df["Season"].unique()):
+        season_df = df[df["Season"] == season]
+
+        goals = int(
+            season_df["FTHG"].sum()
+            + season_df["FTAG"].sum()
+        )
+
+        result.append({
+            "season": season,
+            "goals": goals
+        })
+
+    return result
+
+def top_teams_by_wins():
+    df = load_matches()
+
+    teams = pd.unique(
+        df[["HomeTeam", "AwayTeam"]].values.ravel()
+    )
+
+    results = []
+
+    for team in teams:
+        home_wins = len(
+            df[
+                (df["HomeTeam"] == team)
+                & (df["FTR"] == "H")
+            ]
+        )
+
+        away_wins = len(
+            df[
+                (df["AwayTeam"] == team)
+                & (df["FTR"] == "A")
+            ]
+        )
+
+        total_wins = home_wins + away_wins
+
+        results.append({
+            "team": team,
+            "wins": int(total_wins)
+        })
+
+    results = sorted(
+        results,
+        key=lambda x: x["wins"],
+        reverse=True
+    )
+
+    return results[:10]
