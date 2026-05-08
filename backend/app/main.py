@@ -5,7 +5,10 @@ from app.services.data_service import (
     get_summary_stats,
     get_teams,
     get_team_stats,
-    compare_teams
+    compare_teams,
+    get_seasons,
+    get_season_stats,
+    get_team_season_history
 )
 
 app = FastAPI(title="Premier League Analytics API")
@@ -40,3 +43,17 @@ def team_stats(team_name: str):
 @app.get("/compare")
 def compare(team_a: str, team_b: str):
     return compare_teams(team_a, team_b)
+
+@app.get("/seasons")
+def seasons():
+    return get_seasons()
+
+
+@app.get("/seasons/{season}")
+def season_stats(season: str):
+    return get_season_stats(season)
+
+@app.get("/teams/{team_name}/history")
+def team_history(team_name: str):
+    return get_team_season_history(team_name)
+

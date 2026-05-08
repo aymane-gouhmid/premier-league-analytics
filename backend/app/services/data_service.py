@@ -98,3 +98,138 @@ def compare_teams(team_a: str, team_b: str):
         "team_a": stats_a,
         "team_b": stats_b
     }
+
+def get_seasons():
+    df = load_matches()
+
+    seasons = sorted(df["Season"].unique())
+
+    return seasons
+
+def get_season_stats(season: str):
+    df = load_matches()
+
+    season_df = df[df["Season"] == season]
+
+    teams = pd.unique(
+        season_df[["HomeTeam", "AwayTeam"]].values.ravel()
+    )
+
+    standings = []
+
+    for team in teams:
+        home = season_df[season_df["HomeTeam"] == team]
+        away = season_df[season_df["AwayTeam"] == team]
+
+        wins = (
+            len(home[home["FTR"] == "H"])
+            + len(away[away["FTR"] == "A"])
+        )
+
+        draws = (
+            len(home[home["FTR"] == "D"])
+            + len(away[away["FTR"] == "D"])
+        )
+
+        losses = (
+            len(home[home["FTR"] == "A"])
+            + len(away[away["FTR"] == "H"])
+        )
+
+        goals_for = (
+            home["FTHG"].sum()
+            + away["FTAG"].sum()
+        )
+
+        goals_against = (
+            home["FTAG"].sum()
+            + away["FTHG"].sum()
+        )
+
+        points = wins * 3 + draws
+
+        standings.append({
+            "team": team,
+            "played": int(len(home) + len(away)),
+            "wins": int(wins),
+            "draws": int(draws),
+            "losses": int(losses),
+            "goals_for": int(goals_for),
+            "goals_against": int(goals_against),
+            "goal_diff": int(goals_for - goals_against),
+            "points": int(points),
+        })
+
+    standings = sorted(
+        standings,
+        key=lambda x: (x["points"], x["goal_diff"]),
+        reverse=True
+    )
+
+    champion = standings[0]["team"]
+
+    return {
+        "season": season,
+        "champion": champion,
+        "matches": len(season_df),
+        "goals": int(
+            season_df["FTHG"].sum()
+            + season_df["FTAG"].sum()
+        ),
+        "standings": standings
+    }
+
+def get_team_season_history(team_name: str):
+    df = load_matches()
+
+    seasons = sorted(df["Season"].unique())
+
+    history = []
+
+    for season in seasons:
+        season_df = df[df["Season"] == season]
+
+        home = season_df[season_df["HomeTeam"] == team_name]
+        away = season_df[season_df["AwayTeam"] == team_name]
+
+        played = len(home) + len(away)
+
+        if played == 0:
+            continue
+
+        wins = (
+            len(home[home["FTR"] == "H"])
+            + len(away[away["FTR"] == "A"])
+        )
+
+        draws = (
+            len(home[home["FTR"] == "D"])
+            + len(away[away["FTR"] == "D"])
+        )
+
+        losses = played - wins - draws
+
+        goals_for = (
+            home["FTHG"].sum()
+            + away["FTAG"].sum()
+        )
+
+        goals_against = (
+            home["FTAG"].sum()
+            + away["FTHG"].sum()
+        )
+
+        points = wins * 3 + draws
+
+        history.append({
+            "season": season,
+            "played": int(played),
+            "wins": int(wins),
+            "draws": int(draws),
+            "losses": int(losses),
+            "goals_for": int(goals_for),
+            "goals_against": int(goals_against),
+            "points": int(points),
+        })
+
+    return history
