@@ -7,15 +7,20 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
 import { motion } from "framer-motion";
+import { Activity, Goal, Shield, Trophy } from "lucide-react";
 import api from "../api/footballApi";
 import SkeletonCard from "../components/SkeletonCard";
+import StateCard from "../components/StateCard";
+import ChartPanel from "../components/ui/ChartPanel";
+import HeroWidget from "../components/ui/HeroWidget";
+import MetricCard from "../components/ui/MetricCard";
+import PageHero from "../components/ui/PageHero";
+import SectionHeader from "../components/ui/SectionHeader";
+import dashboardHero from "../assets/backgrounds/dashboard-hero.webp";
 import {
-  cardHover,
-  cardVariants,
   containerVariants,
   pageVariants,
 } from "../lib/motion";
@@ -25,8 +30,12 @@ export default function Dashboard() {
   const [goalsBySeason, setGoalsBySeason] = useState([]);
   const [topTeams, setTopTeams] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
+  function loadDashboard() {
+    setIsLoading(true);
+    setError(null);
+
     Promise.all([
       api.get("/summary"),
       api.get("/analytics/goals-by-season"),
@@ -37,7 +46,14 @@ export default function Dashboard() {
         setGoalsBySeason(goalsRes.data);
         setTopTeams(topTeamsRes.data);
       })
+      .catch(() => {
+        setError("Unable to load dashboard analytics right now.");
+      })
       .finally(() => setIsLoading(false));
+  }
+
+  useEffect(() => {
+    loadDashboard();
   }, []);
 
   return (
@@ -47,96 +63,141 @@ export default function Dashboard() {
       initial="hidden"
       animate="visible"
     >
-      <h1 className="text-3xl font-bold sm:text-4xl">Premier League Dashboard</h1>
-      <p className="mt-2 text-slate-500">
-        Real EPL statistics from 2000 to 2026.
-      </p>
-
-      <motion.section
-        className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-8 lg:grid-cols-4 lg:gap-5"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <PageHero
+        kicker="Elite football intelligence"
+        title="Premier League analytics command center"
+        description="A cinematic analytics workspace for tracking scoring momentum, club dominance, match volume, and season-scale Premier League patterns from 2000 to 2026."
+        backgroundImage={dashboardHero}
       >
-        {isLoading || !stats ? (
-          Array.from({ length: 4 }).map((_, index) => (
-            <SkeletonCard key={index} />
-          ))
-        ) : (
-          <>
-            <StatCard title="Saisons" value={stats.seasons} />
-            <StatCard title="Equipes" value={stats.teams} />
-            <StatCard title="Matchs" value={stats.matches} />
-            <StatCard title="Buts" value={stats.goals} />
-          </>
-        )}
-      </motion.section>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <HeroWidget
+            label="Data window"
+            value="26 seasons"
+            detail="Historical EPL coverage"
+          />
+          <HeroWidget
+            label="Analysis mode"
+            value="Live API"
+            detail="Charts, clubs, H2H and tables"
+          />
+          <HeroWidget
+            className="sm:col-span-2"
+            label="Platform focus"
+            value="Premium sports decision layer"
+            icon={<Activity size={22} />}
+          />
+        </div>
+      </PageHero>
 
-      <motion.section
-        className="mt-6 grid grid-cols-1 gap-4 lg:mt-8 lg:grid-cols-2 lg:gap-5"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {isLoading ? (
-          <>
-            <SkeletonCard variant="chart" />
-            <SkeletonCard variant="chart" />
-          </>
-        ) : (
-          <>
-            <ChartCard title="Goals by Season">
-              <LineChart data={goalsBySeason}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="season" />
-                <YAxis />
-                <Tooltip />
-                <Line dataKey="goals" />
-              </LineChart>
-            </ChartCard>
+      {error ? (
+        <StateCard
+          className="mt-8"
+          title="Dashboard unavailable"
+          message={error}
+          onAction={loadDashboard}
+          actionLabel="Reload dashboard"
+        />
+      ) : (
+        <>
+          <motion.section
+            className="-mt-5 grid grid-cols-1 gap-4 px-1 sm:grid-cols-2 lg:grid-cols-4 lg:px-5"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {isLoading || !stats ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <SkeletonCard key={index} />
+              ))
+            ) : (
+              <>
+                <MetricCard icon={<Trophy size={20} />} title="Seasons" value={stats.seasons} />
+                <MetricCard icon={<Shield size={20} />} title="Teams" value={stats.teams} />
+                <MetricCard icon={<Activity size={20} />} title="Matches" value={stats.matches} />
+                <MetricCard icon={<Goal size={20} />} title="Goals" value={stats.goals} />
+              </>
+            )}
+          </motion.section>
 
-            <ChartCard title="Top 10 Teams by Wins">
-              <BarChart data={topTeams}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="team" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="wins" />
-              </BarChart>
-            </ChartCard>
-          </>
-        )}
-      </motion.section>
-    </motion.div>
-  );
-}
+          <section className="mt-10">
+            <SectionHeader
+              kicker="League pulse"
+              title="Scoring trends and winning dynasties"
+              description="The dashboard prioritizes the two signals analysts scan first: total goals over time and the clubs with the strongest win profiles."
+            />
 
-function StatCard({ title, value }) {
-  return (
-    <motion.div
-      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
-      variants={cardVariants}
-      whileHover={cardHover}
-    >
-      <p className="text-sm text-slate-500">{title}</p>
-      <h3 className="mt-2 break-words text-2xl font-bold sm:mt-3 sm:text-3xl">{value}</h3>
-    </motion.div>
-  );
-}
+            <motion.div
+              className="bento-section lg:grid-cols-12"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {isLoading ? (
+                <>
+                  <SkeletonCard variant="chart" className="lg:col-span-7" />
+                  <SkeletonCard variant="chart" className="lg:col-span-5" />
+                </>
+              ) : (
+                <>
+                  {goalsBySeason.length ? (
+                    <ChartPanel title="Goals by Season" className="lg:col-span-7">
+                      <LineChart
+                        data={goalsBySeason}
+                        margin={{ top: 18, right: 32, left: 10, bottom: 22 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#dbe7e2" />
+                        <XAxis
+                          dataKey="season"
+                          minTickGap={22}
+                          tick={{ fill: "#64748b", fontSize: 12 }}
+                          padding={{ left: 22, right: 22 }}
+                        />
+                        <YAxis width={42} tick={{ fill: "#64748b", fontSize: 12 }} />
+                        <Tooltip />
+                        <Line dataKey="goals" stroke="#059669" strokeWidth={3} dot={false} />
+                      </LineChart>
+                    </ChartPanel>
+                  ) : (
+                    <StateCard
+                      type="empty"
+                      className="lg:col-span-7"
+                      title="No goal trend data"
+                      message="The goals-by-season dataset is empty for now."
+                    />
+                  )}
 
-function ChartCard({ title, children }) {
-  return (
-    <motion.div
-      className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6"
-      variants={cardVariants}
-      whileHover={cardHover}
-    >
-      <h2 className="mb-4 text-xl font-bold sm:mb-6 sm:text-2xl">{title}</h2>
-      <div className="h-64 min-w-0 sm:h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          {children}
-        </ResponsiveContainer>
-      </div>
+                  {topTeams.length ? (
+                    <ChartPanel title="Top 10 Teams by Wins" className="lg:col-span-5">
+                      <BarChart
+                        data={topTeams}
+                        margin={{ top: 18, right: 28, left: 8, bottom: 18 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#dbe7e2" />
+                        <XAxis
+                          dataKey="team"
+                          minTickGap={12}
+                          tick={{ fill: "#64748b", fontSize: 11 }}
+                          padding={{ left: 18, right: 18 }}
+                        />
+                        <YAxis width={38} tick={{ fill: "#64748b", fontSize: 12 }} />
+                        <Tooltip />
+                        <Bar dataKey="wins" fill="#10b981" radius={[10, 10, 0, 0]} />
+                      </BarChart>
+                    </ChartPanel>
+                  ) : (
+                    <StateCard
+                      type="empty"
+                      className="lg:col-span-5"
+                      title="No team ranking data"
+                      message="The top-teams dataset is empty for now."
+                    />
+                  )}
+                </>
+              )}
+            </motion.div>
+          </section>
+        </>
+      )}
     </motion.div>
   );
 }

@@ -6,15 +6,15 @@ export default function SkeletonCard({
   if (variant === "chart") {
     return (
       <div
-        className={`min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 ${className}`}
+        className={`premium-card min-w-0 rounded-3xl p-4 sm:p-6 ${className}`}
       >
         <SkeletonLine className="h-6 w-44" />
-        <div className="mt-6 h-64 min-w-0 rounded-xl bg-slate-100 sm:h-80">
+        <div className="premium-surface mt-6 h-64 min-w-0 rounded-2xl sm:h-80">
           <div className="flex h-full items-end gap-3 px-4 pb-4">
             {[56, 74, 48, 82, 64, 70, 52].map((height, index) => (
               <div
                 key={index}
-                className="flex-1 rounded-t-lg bg-slate-200"
+                className="animate-pulse flex-1 rounded-t-lg bg-slate-200"
                 style={{ height: `${height}%` }}
               />
             ))}
@@ -27,7 +27,7 @@ export default function SkeletonCard({
   if (variant === "team") {
     return (
       <div
-        className={`min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}
+        className={`premium-card min-w-0 rounded-3xl p-5 ${className}`}
       >
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-emerald-100" />
@@ -39,7 +39,7 @@ export default function SkeletonCard({
 
   if (variant === "tile") {
     return (
-      <div className={`min-w-0 rounded-xl bg-slate-50 p-3 sm:p-4 ${className}`}>
+      <div className={`premium-surface min-w-0 rounded-2xl p-3 sm:p-4 ${className}`}>
         <SkeletonLine className="h-3 w-20" />
         <SkeletonLine className="mt-3 h-6 w-14" />
       </div>
@@ -49,14 +49,14 @@ export default function SkeletonCard({
   if (variant === "matches") {
     return (
       <div
-        className={`min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 ${className}`}
+        className={`premium-card min-w-0 rounded-3xl p-4 sm:p-6 ${className}`}
       >
         <SkeletonLine className="h-6 w-40" />
         <div className="mt-4 space-y-3">
           {Array.from({ length: rows }).map((_, index) => (
             <div
               key={index}
-              className="flex flex-col gap-3 rounded-xl bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="premium-surface flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="min-w-0 flex-1">
                 <SkeletonLine className="h-3 w-3/5" />
@@ -73,7 +73,7 @@ export default function SkeletonCard({
   if (variant === "table") {
     return (
       <div
-        className={`min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 ${className}`}
+        className={`premium-card min-w-0 rounded-3xl p-4 sm:p-6 ${className}`}
       >
         <SkeletonLine className="h-6 w-32" />
         <div className="mt-5 min-w-[760px] space-y-3 overflow-hidden">
@@ -94,7 +94,7 @@ export default function SkeletonCard({
 
   return (
     <div
-      className={`min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 ${className}`}
+      className={`premium-card min-w-0 rounded-3xl p-4 sm:p-6 ${className}`}
     >
       <SkeletonLine className="h-4 w-24" />
       <SkeletonLine className="mt-4 h-8 w-20" />
