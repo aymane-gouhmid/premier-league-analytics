@@ -112,7 +112,7 @@ export default function Teams() {
       <section className="mt-8 space-y-5">
         <div className="grid gap-5 lg:grid-cols-[21rem_minmax(0,1fr)] xl:grid-cols-[23rem_minmax(0,1fr)] lg:items-start">
           <motion.aside
-            className="premium-card rounded-[2rem] p-4 lg:sticky lg:top-28"
+            className="premium-card flex max-h-[34rem] min-h-[34rem] flex-col rounded-[2rem] p-4 lg:sticky lg:top-28 xl:max-h-[36rem] xl:min-h-[36rem]"
             variants={cardVariants}
             initial="hidden"
             animate="visible"
@@ -130,7 +130,7 @@ export default function Teams() {
             </div>
 
             <motion.div
-              className="mt-5 grid max-h-[28rem] grid-cols-1 gap-3 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-1"
+              className="mt-5 grid flex-1 grid-cols-1 content-start gap-3 overflow-y-auto pr-1 sm:grid-cols-2 lg:grid-cols-1"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
