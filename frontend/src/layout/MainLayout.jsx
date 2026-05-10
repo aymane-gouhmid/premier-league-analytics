@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { Activity, BarChart3, GitCompare, Trophy, Users } from "lucide-react";
+import siteStadiumBg from "../assets/backgrounds/site-stadium-bg.webp";
 
 const navItems = [
   { to: "/", icon: <BarChart3 size={18} />, text: "Dashboard" },
@@ -11,6 +12,10 @@ const navItems = [
 export default function MainLayout() {
   return (
     <div className="app-shell relative min-h-screen overflow-x-hidden text-slate-900">
+      <div
+        className="site-stadium-bg pointer-events-none fixed inset-0"
+        style={{ "--site-bg": `url(${siteStadiumBg})` }}
+      />
       <div className="ambient-grid pointer-events-none fixed inset-0" />
       <div className="pitch-lines pointer-events-none fixed inset-x-0 top-24 h-[28rem] opacity-45" />
       <div className="pointer-events-none fixed inset-0 opacity-80">
