@@ -11,6 +11,12 @@ from app.services.data_service import (
     get_team_season_history,
     goals_by_season,
     top_teams_by_wins,
+    matches_by_season,
+    top_teams_by_goals,
+    avg_goals_by_season,
+    results_distribution,
+    best_attacks,
+    best_defenses,
     head_to_head,
     get_team_last_matches,
     predict_match
@@ -20,7 +26,7 @@ app = FastAPI(title="Premier League Analytics API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -70,6 +76,30 @@ def analytics_goals():
 @app.get("/analytics/top-teams")
 def analytics_top_teams():
     return top_teams_by_wins()
+
+@app.get("/analytics/matches-by-season")
+def analytics_matches_by_season():
+    return matches_by_season()
+
+@app.get("/analytics/top-teams-by-goals")
+def analytics_top_teams_by_goals():
+    return top_teams_by_goals()
+
+@app.get("/analytics/avg-goals-by-season")
+def analytics_avg_goals_by_season():
+    return avg_goals_by_season()
+
+@app.get("/analytics/results-distribution")
+def analytics_results_distribution():
+    return results_distribution()
+
+@app.get("/analytics/best-attacks")
+def analytics_best_attacks():
+    return best_attacks()
+
+@app.get("/analytics/best-defenses")
+def analytics_best_defenses():
+    return best_defenses()
 
 @app.get("/head-to-head")
 def h2h(team_a: str, team_b: str):

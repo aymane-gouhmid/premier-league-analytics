@@ -8,6 +8,7 @@ import MetricCard from "../components/ui/MetricCard";
 import PageHero from "../components/ui/PageHero";
 import SectionHeader from "../components/ui/SectionHeader";
 import seasonsHero from "../assets/backgrounds/seasons-hero.webp";
+import { teamLogos } from "../data/teamLogos";
 import {
   cardHover,
   cardVariants,
@@ -132,7 +133,11 @@ export default function Seasons() {
             animate="visible"
           >
             <MetricCard icon={<CalendarDays size={20} />} title="Season" value={seasonStats.season} />
-            <MetricCard icon={<Crown size={20} />} title="Champion" value={seasonStats.champion} />
+            <MetricCard
+              icon={<Crown size={20} />}
+              title="Champion"
+              value={<TeamName team={seasonStats.champion} />}
+            />
             <MetricCard icon={<ListOrdered size={20} />} title="Matches" value={seasonStats.matches} />
             <MetricCard icon={<Goal size={20} />} title="Goals" value={seasonStats.goals} />
           </motion.section>
@@ -186,7 +191,7 @@ export default function Seasons() {
                           {index + 1}
                         </td>
                         <td className="px-3 font-black text-slate-950 sm:px-0">
-                          {team.team}
+                          <TeamName team={team.team} />
                         </td>
                         <td className="px-3 sm:px-0">{team.played}</td>
                         <td className="px-3 sm:px-0">{team.wins}</td>
@@ -216,6 +221,23 @@ export default function Seasons() {
         </>
       )}
     </motion.div>
+  );
+}
+
+function TeamName({ team }) {
+  const logo = teamLogos[team];
+
+  return (
+    <span className="inline-flex min-w-0 items-center gap-2">
+      {logo ? (
+        <img
+          src={logo}
+          alt={team}
+          className="h-8 w-8 shrink-0 rounded-xl bg-white/80 p-1.5 object-contain shadow-sm ring-1 ring-slate-200/70"
+        />
+      ) : null}
+      <span className="min-w-0 truncate">{team}</span>
+    </span>
   );
 }
 

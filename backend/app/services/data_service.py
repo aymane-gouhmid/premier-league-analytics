@@ -293,6 +293,150 @@ def top_teams_by_wins():
 
     return results[:10]
 
+def matches_by_season():
+    df = load_matches()
+
+    result = []
+
+    for season in sorted(df["Season"].unique()):
+        season_df = df[df["Season"] == season]
+
+        result.append({
+            "season": season,
+            "matches": int(len(season_df))
+        })
+
+    return result
+
+def top_teams_by_goals():
+    df = load_matches()
+
+    teams = pd.unique(
+        df[["HomeTeam", "AwayTeam"]].values.ravel()
+    )
+
+    results = []
+
+    for team in teams:
+        if pd.isna(team):
+            continue
+
+        home_goals = df[df["HomeTeam"] == team]["FTHG"].sum()
+        away_goals = df[df["AwayTeam"] == team]["FTAG"].sum()
+
+        results.append({
+            "team": str(team),
+            "goals": int(home_goals + away_goals)
+        })
+
+    results = sorted(
+        results,
+        key=lambda x: x["goals"],
+        reverse=True
+    )
+
+    return results[:10]
+
+def avg_goals_by_season():
+    df = load_matches()
+
+    result = []
+
+    for season in sorted(df["Season"].unique()):
+        season_df = df[df["Season"] == season]
+        matches = len(season_df)
+        goals = season_df["FTHG"].sum() + season_df["FTAG"].sum()
+
+        result.append({
+            "season": season,
+            "avg_goals": round(float(goals / matches), 2) if matches else 0
+        })
+
+    return result
+
+def results_distribution():
+    df = load_matches()
+
+    home_wins = len(df[df["FTR"] == "H"])
+    draws = len(df[df["FTR"] == "D"])
+    away_wins = len(df[df["FTR"] == "A"])
+    total = home_wins + draws + away_wins
+
+    return {
+        "home_wins": int(home_wins),
+        "draws": int(draws),
+        "away_wins": int(away_wins),
+        "total_matches": int(total),
+        "home_win_percentage": round((home_wins / total) * 100, 1) if total else 0,
+        "draw_percentage": round((draws / total) * 100, 1) if total else 0,
+        "away_win_percentage": round((away_wins / total) * 100, 1) if total else 0,
+    }
+
+def best_attacks():
+    df = load_matches()
+
+    teams = pd.unique(
+        df[["HomeTeam", "AwayTeam"]].values.ravel()
+    )
+
+    results = []
+
+    for team in teams:
+        if pd.isna(team):
+            continue
+
+        home_matches = df[df["HomeTeam"] == team]
+        away_matches = df[df["AwayTeam"] == team]
+        played = len(home_matches) + len(away_matches)
+        goals = home_matches["FTHG"].sum() + away_matches["FTAG"].sum()
+
+        results.append({
+            "team": str(team),
+            "avg_goals": round(float(goals / played), 2) if played else 0,
+            "total_goals": int(goals),
+            "matches": int(played)
+        })
+
+    results = sorted(
+        results,
+        key=lambda x: x["avg_goals"],
+        reverse=True
+    )
+
+    return results[:10]
+
+def best_defenses():
+    df = load_matches()
+
+    teams = pd.unique(
+        df[["HomeTeam", "AwayTeam"]].values.ravel()
+    )
+
+    results = []
+
+    for team in teams:
+        if pd.isna(team):
+            continue
+
+        home_matches = df[df["HomeTeam"] == team]
+        away_matches = df[df["AwayTeam"] == team]
+        played = len(home_matches) + len(away_matches)
+        goals_conceded = home_matches["FTAG"].sum() + away_matches["FTHG"].sum()
+
+        results.append({
+            "team": str(team),
+            "avg_goals_conceded": round(float(goals_conceded / played), 2) if played else 0,
+            "total_goals_conceded": int(goals_conceded),
+            "matches": int(played)
+        })
+
+    results = sorted(
+        results,
+        key=lambda x: x["avg_goals_conceded"]
+    )
+
+    return results[:10]
+
 def head_to_head(team_a: str, team_b: str):
     df = load_matches()
 
