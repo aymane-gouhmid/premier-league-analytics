@@ -1,7 +1,11 @@
+import os
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.services.data_service import (
+    load_matches,
     get_summary_stats,
     get_teams,
     get_team_stats,
@@ -22,12 +26,29 @@ from app.services.data_service import (
     predict_match
 )
 
-app = FastAPI(title="Premier League Analytics API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Preloading Premier League data...")
+    load_matches()
+    print("Premier League data loaded successfully")
+    yield
+
+
+app = FastAPI(title="Premier League Analytics API", lifespan=lifespan)
+
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173",
+    ).split(",")
+    if origin.strip()
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_origin_regex=r"http://(localhost|127\.0\.0\.1):\d+",
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

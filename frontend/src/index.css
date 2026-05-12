@@ -205,6 +205,19 @@
     color: rgb(15, 23, 42);
   }
 
+  @media (max-width: 640px) {
+    .page-title {
+      font-size: 1.9rem;
+      line-height: 1.05;
+      max-width: 18rem;
+      overflow-wrap: break-word;
+    }
+
+    .page-copy {
+      max-width: 18.5rem;
+    }
+  }
+
   .section-label {
     font-size: 0.78rem;
     font-weight: 800;
