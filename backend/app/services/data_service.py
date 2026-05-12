@@ -10,7 +10,6 @@ def load_matches():
 
     for file in sorted(DATA_DIR.glob("*.csv")):
         season = file.stem
-        print(f"Reading file: {file.name}")
 
         df = pd.read_csv(
             file,
@@ -20,6 +19,10 @@ def load_matches():
             on_bad_lines="skip"
         )
 
+        df = df.dropna(subset=["HomeTeam", "AwayTeam", "FTHG", "FTAG", "FTR"]).copy()
+        df["FTHG"] = pd.to_numeric(df["FTHG"], errors="coerce")
+        df["FTAG"] = pd.to_numeric(df["FTAG"], errors="coerce")
+        df = df.dropna(subset=["FTHG", "FTAG"])
         df["Season"] = season
         all_matches.append(df)
 

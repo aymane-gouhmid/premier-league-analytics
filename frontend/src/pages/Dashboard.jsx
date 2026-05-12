@@ -101,8 +101,12 @@ export default function Dashboard() {
       if (data.bestDefenses?.length) {
         setBestDefenses(data.bestDefenses);
       } else {
-        const fallbackDefenses = await loadDefensiveFallback();
-        setBestDefenses(fallbackDefenses);
+        try {
+          const fallbackDefenses = await loadDefensiveFallback();
+          setBestDefenses(fallbackDefenses);
+        } catch {
+          setBestDefenses([]);
+        }
       }
     } catch {
         setError("Unable to load dashboard analytics right now.");
@@ -132,9 +136,9 @@ export default function Dashboard() {
       animate="visible"
     >
       <PageHero
-        kicker="Premier football intelligence"
-        title="Premier League Analytics"
-        description="Historical football intelligence from 2000 to 2026."
+        kicker="PL Analytics"
+        title="Football intelligence, built from league data"
+        description="Historical Premier League insight from 2000 to 2026."
         backgroundImage={dashboardHero}
         columns="lg:grid-cols-[1fr_0.9fr]"
       >

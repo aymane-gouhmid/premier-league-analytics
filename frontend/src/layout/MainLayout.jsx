@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { Activity, BarChart3, GitCompare, Trophy, Users } from "lucide-react";
+import { BarChart3, GitCompare, Trophy, Users } from "lucide-react";
 import siteStadiumBg from "../assets/backgrounds/site-stadium-bg.webp";
+import BrandLogo from "../components/BrandLogo";
 
 const navItems = [
   { to: "/", icon: <BarChart3 size={18} />, text: "Dashboard" },
@@ -27,15 +28,13 @@ export default function MainLayout() {
       <header className="fixed left-0 right-0 top-0 z-50 px-3 py-3 sm:px-5">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 rounded-[1.75rem] border border-white/70 bg-white/62 px-3 py-2 shadow-[0_24px_70px_-48px_rgba(15,23,42,0.75)] backdrop-blur-2xl sm:px-4">
           <NavLink to="/" className="flex min-w-0 items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-400 text-white shadow-lg shadow-emerald-500/25">
-              <Activity size={21} />
-            </div>
+            <BrandLogo className="h-11 w-11 shrink-0 drop-shadow-[0_18px_22px_rgba(15,118,110,0.22)]" />
             <div className="hidden min-w-0 sm:block">
               <p className="truncate text-base font-black tracking-tight text-slate-950">
-                EPL Analytics
+                PL Analytics
               </p>
               <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
-                Sports intelligence
+                Football data studio
               </p>
             </div>
           </NavLink>
